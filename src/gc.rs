@@ -5,6 +5,13 @@ use std::sync::atomic::{AtomicPtr, AtomicUsize, Ordering};
 
 pub struct Gc<'a, T>(pub &'a T, pub Tag);
 
+impl<'a, T> Gc<'a, T> {
+    #[inline(always)]
+    pub fn new(t: &'a T) -> Self {
+        Gc(t, Tag(PhantomPinned))
+    }
+}
+
 // Consider `PhantomData`?
 // Prevent construction of data inside `Gc`
 #[derive(Clone, Copy)]
@@ -31,7 +38,7 @@ impl<'a, T> Heap<'a, T> {
 
 impl<'a, T> Deref for Heap<'a, T> {
     type Target = T;
-    fn deref(self) -> &T {
+    fn deref(&self) -> &T {
         self.0
     }
 }
@@ -51,4 +58,10 @@ pub struct RootIntern<T> {
     // using atomic pointer to prevent adding locks
     pub gc_ptr: AtomicPtr<T>,
     pub ref_count: AtomicUsize,
+}
+
+#[test]
+fn create_gc() {
+    use super::*;
+    let gc = Gc::new(&String::from("a"));
 }

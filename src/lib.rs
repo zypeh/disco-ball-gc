@@ -1,4 +1,4 @@
-mod arena;
+mod gc;
 
 #[cfg(test)]
 mod tests {
