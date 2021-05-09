@@ -1,5 +1,5 @@
 use std::clone::Clone;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 use std::marker::{Copy, PhantomPinned};
 use std::sync::atomic::{AtomicPtr, AtomicUsize, Ordering};
 
@@ -31,7 +31,14 @@ impl<'a, T> Heap<'a, T> {
 
 impl<'a, T> Deref for Heap<'a, T> {
     type Target = T;
-    fn deref(&self) -> &T {
+    fn deref(self) -> &T {
+        self.0
+    }
+}
+
+// Adding mut variant of Heap
+impl<'a, T> DerefMut for Heap<'a, T> {
+    fn deref_mut(&mut self) -> &mut T {
         self.0
     }
 }
